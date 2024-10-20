@@ -1,0 +1,151 @@
+{% extends 'dashboard/base.html' %}
+{% block content %}
+  {% with messages=get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <ul id="flash-messages" class="flashes w-100 bg-black rounded p-4 text-white">
+        {% for category, message in messages %}
+          <li class="flash-{{ category }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  <script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+      // Time in milliseconds before flash message disappears
+      const flashTimeout = 2000 // 2 seconds
+    
+      // Select the flash message container
+      const flashMessages = document.getElementById('flash-messages')
+    
+      if (flashMessages) {
+        // Set a timeout to remove the flash message container
+        setTimeout(() => {
+          flashMessages.style.transition = 'opacity 0.5s ease-out'
+          flashMessages.style.opacity = '0'
+          setTimeout(() => flashMessages.remove(), 500) // Wait for the fade-out transition to complete
+        }, flashTimeout)
+      }
+    })
+  </script>
+
+  <div class="row w-100" style="min-height: 450px;">
+    <div class="col-4">
+      <div class="d-flex align-items-center">
+        {% if user[4] == '' %}
+          <img class="shadow" src="{{ url_for('static', filename='icon/Logo-light_box-500x500.png') }}" alt="" width="150" height="auto" style="border-radius: 50%; object-fit: contain; background-color: snow;" />
+        {% else %}
+          <img class="shadow" src="{{ url_for('static', filename=user[4]) }}" alt="" width="150" height="auto" style="border-radius: 50%; object-fit: contain; background-color: snow;" />
+        {% endif %}
+      </div>
+      <br />
+      <p style="font-size: 12px;">
+        Name : {{ user[2] }}
+        <br />
+        Email : {{ user[3] }}
+        <br />
+        Designation : {{ user[5] }}
+        <br />
+      </p>
+      <div class="d-flex">
+        <div>Reference ID : {{ user[1] }}</div>
+        <button id="copyButton" class="ms-auto me-5 rounded shadow-4" style="border: solid 1px; background-color: transparent;" onclick="copyToClipboard()"><i class="bi bi-copy"></i></button>
+      </div>
+      <script>
+        function copyToClipboard() {
+          var textField = document.createElement('textarea')
+          textField.innerText = "{{ user[1] }}"
+          document.body.appendChild(textField)
+          textField.select()
+          document.execCommand('copy')
+          textField.remove()
+        
+          // Show non-interactive popup message
+          var popup = document.createElement('div')
+          popup.innerText = 'Employee ID copied to clipboard!'
+          popup.style.position = 'fixed'
+          popup.style.bottom = '10px' // Adjust position as needed
+          popup.style.right = '10px' // Adjust position as needed
+          popup.style.backgroundColor = '#4CAF50'
+          popup.style.color = 'white'
+          popup.style.padding = '15px'
+          popup.style.borderRadius = '10px'
+          popup.style.opacity = '0' // Start with zero opacity
+          popup.style.transition = 'opacity 0.5s ease-in-out' // Smooth transition for opacity
+          document.body.appendChild(popup)
+        
+          // Set a timeout to remove the popup after 3 seconds (adjust as needed)
+          setTimeout(function () {
+            popup.style.opacity = '1' // Fade in
+            setTimeout(function () {
+              popup.style.opacity = '0' // Fade out
+              setTimeout(function () {
+                popup.remove() // Remove the popup from the DOM
+              }, 500) // Wait for the fade out transition to complete
+            }, 3000) // Wait for 3 seconds before starting fade out
+          }, 100) // Wait for a short delay before fading in
+        }
+      </script>
+    </div>
+    <div class="col-8 p-2">
+      <div class="shadow p-3 rounded-4" style="background-color: #fafafa;">
+        <h2 class="ms-3">Drawings <i class="bi bi-easel"></i></h2>
+        <div class="row">
+          {% for drawing in drawings %}
+            <div class="col-6">
+              <a href="{{ url_for('drawing_view', drawing_id=drawing[0]) }}" class="text-decoration-none text-dark">
+                <div class="rounded rounded-4 shadow m-3 ps-4 pe-4 p-3" style="background-color: #fbfbf9;">
+                  <h6 class="mb-0">{{ drawing[1] }}</h6>
+                  <span style="font-size: 12px;">Drawing Number: {{ drawing[2] }}</span><br />
+                  <span style="font-size: 12px;">Created on : {{ drawing[3] }}</span>
+                  {% if drawing[4] == '00-00-0000' %}
+                    <div class="d-flex">
+                      <span class="me-auto" style="font-size: 10px;">Drawing Unreleased</span>
+                    </div>
+                  {% else %}
+                    <div class="d-flex">
+                      <span class="me-auto" style="font-size: 10px;">Drawing Released on {{ drawing[4] }}</span>
+                    </div>
+                  {% endif %}
+                </div>
+              </a>
+            </div>
+          {% else %}
+            <p>No drawings found.</p>
+          {% endfor %}
+
+          <!--              
+          <div class="rounded rounded-4 shadow m-3 ps-4 pe-4 p-3 col" style="background-color: #fbfbf9;">
+            <div class="d-flex">
+              <h6 class="inline">Jindal Plant Drawing</h6>
+              <span class="ms-auto" style="font-size: 12px;">Date Created : 23-05-2024</span>
+            </div>
+            <div class="d-flex">
+              <span class="me-auto" style="font-size: 10px;">Description of Engineering drawing, Drawing</span>
+              <button class="btn btn-outline-dark m-1 p-1" style="font-size: 12px;">View <i class="bi bi-card-image"></i></button>
+              <button class="btn btn-outline-dark m-1 p-1" style="font-size: 12px;">Download <i class="bi bi-download"></i></button>
+            </div>
+          </div>
+              -->
+        </div>
+      </div>
+
+      <!--<div class="shadow p-3 rounded-4 mt-3" style="background-color: #fafafa;">
+        <h2 class="ms-3">Projects <i class="bi bi-window-stack"></i></h2>
+        <div class="rounded rounded-pill shadow m-3 ps-4 pe-4 p-3" style="background-color: fbfbf9;">
+          <div class="d-flex">
+            <h5>Bokaro Plant Project</h5>
+            <span class="ms-auto" style="font-size: 12px;">Date Created : 23-05-2024</span>
+          </div>
+          <div class="d-flex">
+            <span class="me-auto" style="font-size: 10px;">Description of Engineering drawing, Drawing</span>
+            <button class="btn btn-outline-dark m-1 p-1" style="font-size: 12px;">View <i class="bi bi-card-image"></i></button>
+            <button class="btn btn-outline-dark m-1 p-1" style="font-size: 12px;">Download <i class="bi bi-download"></i></button>
+          </div>
+        </div>
+      </div>-->
+
+
+    </div>
+  </div>
+{% endblock %}

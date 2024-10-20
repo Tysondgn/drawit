@@ -1,0 +1,189 @@
+{% extends 'dashboard/base.html' %}
+{% block content %}
+  <div>
+    <div>
+      <div class="row p-4">
+        <div class="col text-center m-2 p-4 rounded-4" style="background-color: rgba(162, 251, 148, 50);">Total Drawing Count : {{ drawing_count }}</div>
+        <div class="col text-center m-2 p-4 rounded-4" style="background-color: rgba(161, 255, 228, 0.5);">Total Feedback Count : {{ feedback_count }}</div>
+        <div class="col text-center m-2 p-4 rounded-4" style="background-color: rgba(255, 252, 132, 0.5);">Total Revision Count :</div>
+      </div>
+
+      <div class="w-100 p-5 pt-2 pb-2 m-4 shadow">
+        <p class="d-inline-flex gap-1">
+          <a class="h5 text-decoration-none" data-bs-toggle="collapse" href="#collapsedrawing" role="button" aria-expanded="false" aria-controls="collapsedrawing">Drawings History &nbsp; <i class="bi bi-chevron-double-down h3"></i></a>
+        </p>
+        <div class="collapse" id="collapsedrawing">
+          <div class="card card-body">
+            <div class="row">
+              {% for drawing in drawings %}
+                <div class="col-6">
+                  <a href="{{ url_for('drawing_view', drawing_id=drawing[0]) }}" class="text-decoration-none text-dark">
+                    <div class="rounded rounded-4 shadow m-3 ps-4 pe-4 p-3" style="background-color: #fbfbf9;">
+                      <h6 class="mb-0">{{ drawing[3] }}</h6>
+                      <span style="font-size: 12px;">Drawing Number: {{ drawing[4] }}</span><br />
+                      <span style="font-size: 12px;">Created on : {{ drawing[15] }}</span>
+                      {% if drawing[10] == '00-00-0000' %}
+                        <div class="d-flex">
+                          <span class="me-auto" style="font-size: 10px;">Drawing Unreleased</span>
+                        </div>
+                      {% else %}
+                        <div class="d-flex">
+                          <span class="me-auto" style="font-size: 10px;">Drawing Released on {{ drawing[10] }}</span>
+                        </div>
+                      {% endif %}
+                    </div>
+                  </a>
+                </div>
+              {% else %}
+                <p>No drawings found.</p>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="w-100 p-5 pt-2 pb-2 m-4 shadow">
+        <p class="d-inline-flex gap-1">
+          <a class="h5 text-decoration-none" data-bs-toggle="collapse" href="#collapseFeedback" role="button" aria-expanded="false" aria-controls="collapseFeedback">Feedback History &nbsp; <i class="bi bi-chevron-double-down h3"></i></a>
+        </p>
+        <div class="collapse" id="collapseFeedback">
+          <div class="card card-body">
+          
+            {% for fb in feedbacks %}
+              {% if fb[5] == 'Pending' %}
+                <div class="m-4 p-4 rounded-4 shadow w-100">
+                  <div>
+                    <div>Authority ID : {{ fb[3] }}</div>
+                  </div>
+                  <hr />
+                  <div class="d-flex">
+                    <span>
+                      @{% for drawing in drawings %}
+                        {% if drawing[0] == fb[1] %}
+                          {{ drawing[3] }} Requested for feedback <b>__Status__</b>
+                        {% endif %}
+                      {% endfor %}
+                      <span class="m-2 rounded-pill p-1 ps-4 pe-4" style="background-color: rgba(255, 252, 132, 0.5); border: sandybrown solid 1px;">{{ fb[5] }}</span>
+                    </span>
+                    {% if fb[3] == session['employee_id'] %}
+                      <button class="p-1 ps-4 pe-4 shadow shadow-3 btn btn-dark ms-auto me-4" data-bs-toggle="modal" data-bs-target="#addFeedbackModal">Add Feedback <i class="bi bi-file-earmark-easel"></i></button>
+                      <!-- Modal -->
+                      <div class="modal fade" id="addFeedbackModal" tabindex="-1" aria-labelledby="addFeedbackModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-fullscreen">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title h4" id="addFeedbackModalLabel">Response Sheet <i class="bi bi-file-earmark-spreadsheet"></i></h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                              <div class="container-fluid w-100 p-5 pt-2" style="background-color: #fbfcf8; height: 100%;">
+                                <div style="margin: 0px 200px 0px 200px;">
+                                  {% for drawing in drawings %}
+                                    {% if drawing[0] == fb[1] and fb[5] == 'Pending' %}
+                                      <form action="{{ url_for('feedback_response', feedback_id=fb[0]) }}" method="POST">
+                                        <h2>{{ drawing[3] }}</h2>
+                                        <div class="m-4 row shadow rounded-4">
+                                          <div class="col-4">
+                                            <a class="text-decoration-none" style="font-size: 16px;" href="{{ url_for('drawing_view', drawing_id=drawing[0]) }}">
+                                              <div class="p-2 shadow rounded-4 border m-4 text-center">
+                                                Link to the Drawing Page <i class="bi bi-easel"></i>
+                                              </div>
+                                            </a>
+                                          </div>
+                                          <div class="col-4">
+                                            <a class="text-decoration-none" style="font-size: 16px;" href="{{ url_for('user_view', user_id=drawing[1]) }}">
+                                              <div class="p-2 shadow rounded-4 border m-4 text-center">
+                                                Link to the Drafter Page <i class="bi bi-person-workspace"></i>
+                                              </div>
+                                            </a>
+                                          </div>
+                                          <div class="col-4">
+                                            <a class="text-decoration-none" style="font-size: 16px;" href="../../{{ drawing[2] }}">
+                                              <div class="p-2 shadow rounded-4 border m-4 text-center">
+                                                Download Drawing <i class="bi bi-file-earmark-arrow-down"></i>
+                                              </div>
+                                            </a>
+                                          </div>
+                                        </div>
+                                        <h4>NOTE :</h4>
+                                        <div class="textarea-container">
+                                          <span id="charCount" class="char-count">0 / 2000</span>
+                                          <textarea name="note" id="textarea" rows="10" style="width: 100%; height: auto; padding: 10px;" placeholder="Add the Changes Here..."></textarea>
+                                        </div>
+                                        <script>
+                                          // JavaScript to update the character count
+                                          document.getElementById('textarea').addEventListener('input', function () {
+                                            const textarea = this
+                                            const charCount = textarea.value.length
+                                            document.getElementById('charCount').textContent = `${charCount} / 2000`
+                                          
+                                            // If you want to limit the textarea to 2000 characters
+                                            if (charCount > 2000) {
+                                              textarea.value = textarea.value.substring(0, 2000)
+                                              document.getElementById('charCount').textContent = '2000 / 2000'
+                                            }
+                                          })
+                                        </script>
+                                        <div class="d-flex justify-content-center">
+                                          <button class="btn btn-lg btn-dark m-2 mt-4 shadow" type="submit">Send feedback</button>
+                                        </div>
+                                      </form>
+                                      <!--   
+                                      <div class="d-flex justify-content-center">
+                                        <button class="btn btn-lg btn-success m-2 shadow">{{ drawing[3] }} Is ready to be released</button>
+                                      </div>    -->
+                                    {% endif %}
+                                  {% endfor %}
+                                </div>
+                              </div>
+                            </div>
+                            <div class="modal-footer d-flex justify-content-center">
+                              <small class="text-muted" style="font-size: 0.9em;">Above is <b>NOTE</b> area where you can put the changes needed in drawing before release.</small>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+              {% else %}
+                <div class="m-4 p-4 rounded-4 shadow w-100">
+                  <div>
+                    <div>Authority ID : {{ fb[3] }}</div>
+                  </div>
+                  <hr />
+                  <span>@</span>
+                  {% for drawing in drawings %}
+                    {% if drawing[0] == fb[1] %}
+                      {{ drawing[3] }} Requested for feedback <b>__Status__</b>
+                    {% endif %}
+                  {% endfor %}
+                  <span class="m-2 rounded-pill p-1 ps-4 pe-4" style="background-color: rgba(132, 255, 138, 0.5); border: greenyellow solid 1px;">{{ fb[5] }}</span>
+                  <br />
+                  <br />
+                  <div class="row ms-2">
+                    <div class="col-6 text-muted" style="font-size: 12px;">Date Requested : {{ fb[6] }}</div>
+                    <div class="col-6 text-muted" style="font-size: 12px;">Date Responded : {{ fb[7] }}</div>
+                  </div>
+                  <br />
+                  <div class="d-flex">
+                    <h5>Note :</h5>
+                    {% for drawing in drawings %}
+                      {% if drawing[0] == fb[1] %}
+                        <span class="ms-auto" style="font-size: 15px;">Drawing Number: <b>{{ drawing[4] }}</b></span>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                  <div class="rounded-4 w-100 m-2 p-2 border" style="background-color: white;">
+                    <pre style="background-color: transparent; margin-bottom: 0%;">{{ fb[4] }}</pre>
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

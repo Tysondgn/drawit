@@ -1,0 +1,54 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+  <div>
+    <h1>Search Drawings</h1>
+    <input class="rounded w-100 m-4 p-2" type="text" id="searchInput" placeholder="Search by DrafterID, DrawingNumber, ProjectCode, or AuthorityID" oninput="performSearch()" />
+  </div>
+
+  <div id="results" class="shadow rounded-4 border"></div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    function performSearch() {
+      var query = $('#searchInput').val();
+      $.ajax({
+        url: '/search',
+        method: 'GET',
+        data: { q: query },
+        success: function (data) {
+          var resultsDiv = $('#results');
+          resultsDiv.empty();
+          if (data.results.length > 0) {
+            data.results.forEach(function (item) {
+              var resultHtml = `
+                <a href="/drawing_detail/${item.DrawingID}" class="text-decoration-none text-dark">
+                  <div class="result-item p-4 m-5 shadow rounded-4 border">
+                    <h1>${item.Title}</h1>
+                    <div class="row">
+                      <div class="col-6">
+                        <p>DrafterID: ${item.DrafterID}</p>
+                      </div>
+                      <div class="col-6">
+                        <p>DrawingNumber: ${item.DrawingNumber}</p>
+                      </div>
+                      <div class="col-6">
+                        <p>ProjectCode: ${item.ProjectCode}</p>
+                      </div>
+                      <div class="col-6">
+                        <p>AuthorityID: ${item.AuthorityID}</p>
+                      </div>
+                    </div>
+                  </div>
+                </a>
+              `;
+              resultsDiv.append(resultHtml);
+            });
+          } else {
+            resultsDiv.append('<p>No results found</p>');
+          }
+        }
+      });
+    }
+  </script>
+{% endblock %}

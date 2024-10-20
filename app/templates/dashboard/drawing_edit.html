@@ -1,0 +1,76 @@
+{% extends 'dashboard/base.html' %}
+{% block content %}
+<h2 style="padding: 0px 0px 40px 0px;">Edit Drawing</h2>
+<form method="POST" enctype="multipart/form-data">
+  <div style="padding-bottom: 40px;">
+    <label class="h5" for="drawing_location">Drawing Upload:</label>
+    <input class="w-100 p-3 m-2 rounded-4 border shadow" type="file" id="drawing_location" name="drawing_location" />
+    {% if drawing.DrawingLocation %}
+    <p>Current File: {{ drawing.DrawingLocation }}</p>
+    {% endif %}
+  </div>
+
+  <h5>Drawing Information:</h5>
+  <div class="shadow rounded-4 m-2 p-3 w-100 mb-5 row">
+    <div class="col p-3">
+      <label class="h6" for="title">Title:</label>
+      <input class="rounded-pill ps-3 ms-2" style="border: solid 0.5px; border-color: #dadada;" type="text" id="title" name="title" value="{{ drawing.Title }}" required />
+    </div>
+    <div class="col p-3">
+      <label class="h6" for="drawing_number">Drawing Number:</label>
+      <input class="rounded-pill ps-3 ms-2" style="border: solid 0.5px; border-color: #dadada;" type="text" id="drawing_number" name="drawing_number" value="{{ drawing.DrawingNumber }}" required />
+    </div>
+  </div>
+
+  <h5>Project Details:</h5>
+  <div class="shadow rounded-4 m-2 p-3 w-100 mb-5 row">
+    <div class="col-6 p-3">
+      <label class="h6" for="client_name">Client Name:</label>
+      <input class="rounded-pill ps-3 ms-2" style="border: solid 0.5px; border-color: #dadada;" type="text" id="client_name" name="client_name" value="{{ drawing.ClientName }}" required />
+    </div>
+    <div class="col-6 p-3">
+      <label class="h6" for="project_location">Project Location:</label>
+      <input class="rounded-pill ps-3 ms-2" style="border: solid 0.5px; border-color: #dadada;" type="text" id="project_location" name="project_location" value="{{ drawing.ProjectLocation }}" required />
+    </div>
+    <div class="col p-3">
+      <label class="h6" for="project_code">Project Code:</label>
+      <input class="rounded-pill ps-3 ms-2" style="border: solid 0.5px; border-color: #dadada;" type="text" id="project_code" name="project_code" value="{{ drawing.ProjectCode }}" required />
+    </div>
+  </div>
+
+  <h5>Feedback Authority</h5>
+  <div class="shadow rounded-4 m-2 p-4 w-100 mb-5 row">
+    <label class="h6 mb-3" for="feedback_authority_id">Feedback Authority ID:</label>
+    <input class="rounded-pill ps-3 pe-3 ms-2" style="border: solid 0.5px; border-color: #dadada;" type="text" id="feedback_authority_id" name="feedback_authority_id" value="{{ drawing.FeedbackAuthorityID }}" required />
+    <small class="text-muted ms-3" style="font-size: 0.9em;"><span style="color: red; font-size: 24px;">*</span>Enter the Reference Id of the Person for Authority.</small>
+  </div>
+
+  <div class="mb-5">
+    <label class="h5" for="reference">Reference:</label>
+    <input class="w-100 p-3 m-2 rounded-4 border shadow" type="file" id="reference" name="reference" />
+    {% if drawing.Reference %}
+    <p>Current File: {{ drawing.Reference }}</p>
+    {% endif %}
+    <small class="text-muted ms-3" style="font-size: 0.9em;">Please upload the Reference (Input Output from) in the desired WORD file format.</small>
+  </div>
+
+  <div class="mb-5">
+    <label class="h5" for="build_of_material">Build of Material:</label>
+    <input class="w-100 p-3 m-2 rounded-4 border shadow" type="file" id="build_of_material" name="build_of_material" />
+    {% if drawing.BuildOfMaterial %}
+    <p>Current File: {{ drawing.BuildOfMaterial }}</p>
+    {% endif %}
+    <small class="text-muted ms-3" style="font-size: 0.9em;">Please upload the BOM (Build Of Material) in the desired XLS format.</small>
+  </div>
+
+  <div class="w-100 d-flex justify-content-center align-items-center" style="margin: 100px 0px 100px 0px;">
+    <button class="rounded-4 w-50 fs-4 p-2 front-bg" style="height: auto; border: solid 1px; border-color: #FFF8DC;" type="submit">Update Drawing <i class="bi bi-file-earmark-arrow-up"></i></button>
+  </div>
+  
+  <div class="w-100 text-center">
+    <small class="text-muted ms-3" style="font-size: 0.6em;">By pressing the above update button you agree that all the data provided above are true and shared with authority.</small>
+  </div>
+  
+  <hr />
+</form>
+{% endblock %}

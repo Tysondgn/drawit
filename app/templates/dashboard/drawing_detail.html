@@ -1,0 +1,179 @@
+{% extends 'dashboard/base.html' %}
+{% block content %}
+  <div class="row">
+    <div class="col-9">
+      <!-- Drawing Download -->
+      <div class="rounded-4 shadow w-100 mb-5 text-center fs-1">
+        <div class="d-flex w-100 pb-4 flex-row-reverse bd-highlight mb-3">
+          <a href="../../{{ drawing[2] }}"><button class="btn btn-dark m-2 ps-4 pe-4">Download <i class="bi bi-file-earmark-arrow-down"></i></button></a>
+          {% if drawing[1] == session['employee_id'] %}
+            <a href="{{ url_for('drawing_edit', drawing_id=drawing[0]) }}"><button class="btn btn-dark m-2 ps-4 pe-4" onclick="copyToClipboard()">Edit <i class="bi bi-pencil-square"></i></button></a>
+          {% endif %}
+        </div>
+        <!-- <img src="" alt="{{ drawing[2] }}" /> -->
+        <i class="bi bi-image"></i>
+        <div class="fs-5">DFX/DWG</div>
+        <!-- 
+        <div style="width: 100%; height: 100%;">
+     
+          <iframe style="width: 100%; height: 400px;" src="//sharecad.org/cadframe/load?url=https://cea6-2401-4900-1c33-5f10-895f-8f46-15e4-a03c.ngrok-free.app/static/files_upload/drawings/MK009_453cd63ef9b945acb5caeaaee0d0b066_DRG_NO.3005-DC514-S-10_FEBRICATION_DETAIL_OF_FLS_COLUMN.dwg" scrolling="no"> </iframe>
+    
+        </div>    
+         -->
+        <br />
+      </div>
+
+      <!-- Drawing Detail -->
+      <div class="shadow p-3 mb-5">
+        <h3>{{ drawing[3] }}</h3>
+        <hr />
+        <div class="row">
+          <div class="col-6 p-3">Drawing Title : {{ drawing[3] }}</div>
+          <div class="col-6 p-3">Drawing Number : {{ drawing[4] }}</div>
+          <div class="col-6 p-3">Client Name : {{ drawing[5] }}</div>
+          <div class="col-6 p-3">Project Location : {{ drawing[6] }}</div>
+          <div class="col-6 p-3">Project Code : {{ drawing[7] }}</div>
+          <div class="col-6 p-3">Feedback Authority : {{ drawing[8] }}</div>
+        </div>
+      </div>
+
+      <!-- Feedback Section -->
+      <div class="shadow p-3 mb-5">
+        <div class="d-flex">
+          <div class="me-auto">
+            <h3>Feedback:</h3>
+          </div>
+          <div>
+            {% if drawing[1] == session['employee_id'] %}
+              <button class="btn btn-dark ps-4 pe-4" style="font-size: 12px;" data-bs-toggle="modal" data-bs-target="#feedbackRequestModal">Request Feedback <i class="bi bi-node-plus"></i></button>
+              <!-- Modal -->
+              <div class="modal fade" id="feedbackRequestModal" tabindex="-1" aria-labelledby="feedbackRequestModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="feedbackRequestModalLabel">Feedback Request</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">Do you want to send a feedback request for drawing {{ drawing[3] }} to Authority {{ drawing[8] }} ?</div>
+                    <div class="modal-footer d-flex justify-content-around">
+                      <button type="button" class="btn btn-danger ps-5 pe-5" data-bs-dismiss="modal">No <i class="bi bi-node-minus"></i></button>
+                      <a href="{{ url_for('feedback_request_add', drawing_id=drawing[0]) }}"><button type="button" class="btn btn-success ps-5 pe-5">Yes <i class="bi bi-node-plus"></i></button></a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <a href="{{ url_for('feedback_request') }}"><button class="btn btn-dark ps-4 pe-4" style="font-size: 12px;">View Feedback <i class="bi bi-binoculars-fill"></i></button></a>
+            {% endif %}
+          </div>
+        </div>
+        <hr />
+        <div class="row">
+          <div class="col-6 p-3">Feedback Authority : {{ drawing[8] }}</div>
+          <div class="col-6 p-3">Feedback Status : {{ drawing[9] }}</div>
+          <!-- <div class="col-6 p-3">Feedback Note : {{ drawing[9] }}</div> -->
+          <div class="col-6 p-3">Release Date : {{ drawing[10] }}</div>
+        </div>
+        <div class="w-100 text-center mt-2 mb-2">
+          {% if drawing[10] == None %}
+            {% if drawing[1] == session['employee_id'] %}
+              <a href="{{ url_for('drawing_release', drawing_id=drawing[0]) }}"><button class="btn btn-dark ps-5 pe-5">Release Final Drawing</button></a>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Requirements BOM and References -->
+      <div class="shadow p-3 mb-5">
+        <h3>Requirements:</h3>
+        <hr />
+        <div class="row">
+          <div class="col-6 p-3">
+            <a href="../../{{ drawing[13] }}" class="text-decoration-none text-dark">
+              <div class="shadow border-4 rounded p-3 text-center border border-5">
+                Download I/O Form <i class="bi bi-download"></i>
+              </div>
+            </a>
+          </div>
+          <div class="col-6 p-3">
+            <a href="../../{{ drawing[14] }}" class="text-decoration-none text-dark">
+              <div class="shadow border-4 rounded p-3 text-center border border-5">
+                Download BOQ <i class="bi bi-download"></i>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {% if drawing[1] == session['employee_id'] %}
+        <!-- Delete Drawing -->
+        <div class="w-100 shadow rounded-4 p-4 d-flex justify-content-between">
+          <h4>Delete Drawing <i class="bi bi-file-earmark-x"></i></h4>
+          <div>
+            <button class="btn btn-danger ps-5 pe-5" data-bs-toggle="modal" data-bs-target="#deleteDrawingModal">Delete</button>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if drawing[1] == session['employee_id'] %}
+      <!-- Delete Confirmation Modal -->
+      <div class="modal fade" id="deleteDrawingModal" tabindex="-1" aria-labelledby="deleteDrawingModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="deleteDrawingModalLabel">Delete Drawing</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('drawing_delete', drawing_id=drawing[0]) }}">
+              <div class="modal-body">
+                Allow to Delete :<input type="text" class="rounded-pill ps-4 pe-4 pt-2 pb-2 bg-none" name="delete" placeholder="DELETE" required /><br /><br />
+                <small class="text-muted" style="font-size: 0.9em;">type "<b>DELETE</b>" in above field to confirm you want to delete this drawing</small>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-dark ps-5 pe-5" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger ps-5 pe-5">Delete</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Feedback enteries -->
+    <div class="col-3 border-3 border-start">
+      <div class="m-1 p-3 shadow rounded mb-3">
+        <h6>Feedback Release</h6><hr />
+        {% for fb in feedback %}
+          {% if drawing[0] == fb[1] %}
+            <div class="m-2 p-2 shadow rounded mb-2" style="font-size: 12px;">
+              {% if fb[7] == None %}
+                Release <br /> <span style="font-size: 12px; color: gray;">Date : Pending</span>
+              {% else %}
+                Release {{ loop.index }}<br /> <span style="font-size: 12px; color: gray;">Date : {{ fb[7] }}</span>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+        <!--  <div class="m-2 p-2 shadow rounded mb-2" style="font-size: 12px;">
+          Release 2 <br /> <span style="font-size: 12px; color: gray;">Date : dd-mm-yyyy</span>
+        </div>
+        <div class="m-2 p-2 shadow rounded mb-2" style="font-size: 12px;">
+          Release 3 <br /> <span style="font-size: 12px; color: gray;">Date : dd-mm-yyyy</span>
+        </div>  -->
+      </div>
+
+      <div class="m-1 p-3 shadow rounded mb-3">
+        <h6>Review Release</h6><hr />
+        <div class="m-2 p-2 shadow rounded mb-2" style="font-size: 12px;">
+          Release 1 <br /> <span style="font-size: 12px; color: gray;">Date : dd-mm-yyyy</span>
+        </div>
+        <div class="m-2 p-2 shadow rounded mb-2" style="font-size: 12px;">
+          Release 2 <br /> <span style="font-size: 12px; color: gray;">Date : dd-mm-yyyy</span>
+        </div>
+        <div class="m-2 p-2 shadow rounded mb-2" style="font-size: 12px;">
+          Release 3 <br /> <span style="font-size: 12px; color: gray;">Date : dd-mm-yyyy</span>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

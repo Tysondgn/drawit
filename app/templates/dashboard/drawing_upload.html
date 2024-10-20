@@ -1,0 +1,118 @@
+{% extends 'dashboard/base.html' %}
+{% block content %}
+  <h2 style="padding: 0px 0px 40px 0px;">Upload New Drawing</h2>
+  <form method="POST" enctype="multipart/form-data">
+    <div style="padding-bottom: 40px;">
+      <label class="h5" for="drawing_location">Drawing Upload:</label>
+      <input class="w-100 p-3 m-2 rounded-4 border shadow" type="file" id="drawing_location" name="drawing_location" required />
+    </div>
+
+    <h5>Drawing Information:</h5>
+    <div class="shadow rounded-4 m-2 p-3 w-100 mb-5 row">
+      <div class="col p-3">
+        <label class="h6" for="title">Title:</label>
+        <input class="rounded-pill ps-3 ms-2" style="border: solid 0.5px; border-color: #dadada;" type="text" id="title" name="title" required />
+      </div>
+      <div class="col p-3">
+        <label class="h6" for="drawing_number">Drawing Number:</label>
+        <input class="rounded-pill ps-3 ms-2" style="border: solid 0.5px; border-color: #dadada;" type="text" id="drawing_number" name="drawing_number" required />
+      </div>
+    </div>
+
+    <h5>Project Details:</h5>
+    <div class="shadow rounded-4 m-2 p-3 w-100 mb-5 row">
+      <div class="col-6 p-3">
+        <label class="h6" for="client_name">Client Name:</label>
+        <input class="rounded-pill ps-3 ms-2" style="border: solid 0.5px; border-color: #dadada;" type="text" id="client_name" name="client_name" required />
+      </div>
+      <div class="col-6 p-3">
+        <label class="h6" for="project_location">Project Location:</label>
+        <input class="rounded-pill ps-3 ms-2" style="border: solid 0.5px; border-color: #dadada;" type="text" id="project_location" name="project_location" required />
+      </div>
+      <div class="col p-3">
+        <label class="h6" for="project_code">Project Code:</label>
+        <input class="rounded-pill ps-3 ms-2" style="border: solid 0.5px; border-color: #dadada;" type="text" id="project_code" name="project_code" required />
+      </div>
+    </div>
+
+   <!-- <h5>Feedback Authority</h5>
+    <div class="shadow rounded-4 m-2 p-4 w-100 mb-5 row">
+      <label class="h6 mb-3" for="feedback_authority_id">Feedback Authority ID:</label>
+      <input class="rounded-pill ps-3 pe-3 ms-2" style="border: solid 0.5px; border-color: #dadada;" type="text" id="feedback_authority_id" name="feedback_authority_id" required />
+      <small class="text-muted ms-3" style="font-size: 0.9em;"><span style="color: red; font-size: 24px;">*</span>Enter the Reference Id of the Person for Authority.</small>
+    </div> -->
+
+    <h5>Feedback Authority</h5>
+    <div class="shadow rounded-4 m-2 p-4 w-100 mb-5 row">
+      <label class="h6 mb-3" for="feedback_authority_id">Feedback Authority ID:</label>
+      <input class="rounded-pill ps-3 pe-3 ms-2" style="border: solid 0.5px; border-color: #dadada;" type="text" id="feedback_authority_id" name="feedback_authority_id" oninput="fetchUserIds()" required />
+      <small class="text-muted ms-3" style="font-size: 0.9em;"><span style="color: red; font-size: 24px;">*</span> Enter the Reference ID of the Person for Authority.</small>
+      <ul id="user_id_suggestions" class="list-group" style="position: absolute; z-index: 1000; max-height: 200px; overflow-y: auto;"></ul>
+    </div>
+  
+    <script>
+      function fetchUserIds() {
+        const input = document.getElementById("feedback_authority_id");
+        const suggestionsList = document.getElementById("user_id_suggestions");
+        const query = input.value;
+  
+        if (query.length >= 0) {  // Start fetching suggestions after 2 characters
+          fetch(`/get_user_ids?query=${query}`)
+            .then(response => response.json())
+            .then(data => {
+              suggestionsList.innerHTML = "";  // Clear previous suggestions
+  
+              data.forEach(userId => {
+                const suggestionItem = document.createElement("li");
+                suggestionItem.textContent = userId;
+                suggestionItem.className = "list-group-item list-group-item-action w-50";
+                suggestionsList.appendChild(suggestionItem);
+  
+                suggestionItem.addEventListener("click", function() {
+                  input.value = userId;
+                  suggestionsList.innerHTML = "";  // Clear suggestions after selection
+                });
+              });
+            });
+        } else {
+          suggestionsList.innerHTML = "";  // Clear suggestions if query is too short
+        }
+      }
+  
+      document.addEventListener("click", function(event) {
+        const input = document.getElementById("feedback_authority_id");
+        const suggestionsList = document.getElementById("user_id_suggestions");
+  
+        if (!input.contains(event.target) && !suggestionsList.contains(event.target)) {
+          suggestionsList.innerHTML = "";  // Clear suggestions if clicking outside
+        }
+      });
+    </script>
+
+    <div class="mb-5">
+      <label class="h5" for="reference">I/O Form:</label>
+      <input class="w-100 p-3 m-2 rounded-4 border shadow" type="file" id="reference" name="reference" />
+      <small class="text-muted ms-3" style="font-size: 0.9em;">Please upload the I/O Form (Input Output from) in the desired WORD file format.</small>
+    </div>
+
+    <div class="mb-5">
+      <label class="h5" for="build_of_material">Build of Quality:</label>
+      <input class="w-100 p-3 m-2 rounded-4 border shadow" type="file" id="build_of_material" name="build_of_material" />
+      <small class="text-muted ms-3" style="font-size: 0.9em;">Please upload the BOQ (Build Of Quality) in the desired XLS format.</small>
+    </div>
+    
+    <div class="mb-5">
+      <label class="h5" for="build_of_material">DCI Form:</label>
+      <input class="w-100 p-3 m-2 rounded-4 border shadow" type="file" id="build_of_material" name="designe_change_note" />
+      <small class="text-muted ms-3" style="font-size: 0.9em;">Please upload the DCI Form (Designe Change Note) in the desired WORD format.</small>
+    </div>
+
+    <div class="w-100 d-flex justify-content-center align-items-center" style="margin: 100px 0px 100px 0px ;">
+      <button class="rounded-4 w-50 fs-4 p-2 front-bg" style="height: auto; border: solid 1px; border-color: #FFF8DC;" type="submit">Upload Drawing <i class="bi bi-file-earmark-arrow-up"></i></button>
+    </div>
+    <div class="w-100 text-center">
+      <small class="text-muted ms-3" style="font-size: 0.6em;">By pressing the above upload button you agree that all the data provide above are true and shared with authority.</small>
+    </div>
+    <hr />
+  </form>
+{% endblock %}
